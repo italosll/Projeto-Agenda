@@ -1,7 +1,8 @@
 const Login = require('../models/LoginModel')
 
 exports.index = (req,res) =>{
-    res.render('login');
+    if(req.session.user) return res.render('login-logado');
+    return res.render('login');
 }
 
 exports.register = async function(req,res){
@@ -42,6 +43,7 @@ exports.login = async function(req,res){
             return;
         }
         req.flash('success', 'Você entrou no sistema');
+        req.session.user=login.user;
         req.session.save(function(){
             return res.redirect('back');
         });    
@@ -49,5 +51,10 @@ exports.login = async function(req,res){
         console.log(e);
         return res.render('404')
     }
+}
+
+exports.logout = function(req,res){
+    req.session.destroy();
+    res.redirect('/');
 }
 
